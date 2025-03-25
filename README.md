@@ -97,7 +97,7 @@ La API está documentada con **Swagger** y **OpenAPI**, permitiendo la generaci�
    **Parámetros de consulta:**
 
    | Parámetro       | Tipo     | Requerido | Descripción |
-         |---------------|---------|----------|-------------|
+   |---------------|---------|----------|-------------|
    | applicationDate | String  | Sí       | Fecha y hora en formato `YYYY-MM-DDTHH:MM:SS` |
    | productId      | Integer | Sí       | ID del producto |
    | brandId        | Integer | Sí       | ID de la marca |
