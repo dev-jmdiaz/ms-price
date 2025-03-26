@@ -1,7 +1,9 @@
-package com.inditex.infrastructure.repository;
+package com.inditex.infrastructure.adapter;
 
-import com.inditex.domain.model.PriceResponseDTO;
-import com.inditex.infrastructure.mapper.PriceMapper;
+import com.inditex.domain.model.Brand;
+import com.inditex.domain.model.Currency;
+import com.inditex.domain.model.Price;
+import com.inditex.infrastructure.mapper.PriceEntityMapper;
 import com.inditex.infrastructure.repository.entity.PriceEntity;
 import com.inditex.infrastructure.repository.jpa.PriceJpaRepository;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -17,15 +20,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PriceRepositoryImplTest {
+class PriceRepositoryAdapterTest {
 
     @Mock
     private PriceJpaRepository priceJPARepository;
     @Mock
-    private PriceMapper mapper;
+    private PriceEntityMapper mapper;
 
     @InjectMocks
-    private PriceRepositoryImpl priceRepositoryImpl;
+    private PriceRepositoryAdapter priceRepositoryImpl;
 
     @Test
     void getPreferredPrice_ShouldReturnMappedPrice_WhenPriceExists() {
@@ -34,13 +37,15 @@ class PriceRepositoryImplTest {
         Integer brandId = 1;
 
         PriceEntity mockEntity = new PriceEntity();
-        PriceResponseDTO mockDto = new PriceResponseDTO();
+        Price mockDto = new Price(0, productId, 0, Currency.EUR,
+                BigDecimal.ZERO, LocalDateTime.now(), LocalDateTime.now(),
+                new Brand(brandId, "Zara"));
 
-        when(priceJPARepository.findTopByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
-                productId, brandId, applicationDate, applicationDate)).thenReturn(Optional.of(mockEntity));
+        when(priceJPARepository.findTopPrice(
+                productId, brandId, applicationDate)).thenReturn(Optional.of(mockEntity));
         when(mapper.toDomain(mockEntity)).thenReturn(mockDto);
 
-        Optional<PriceResponseDTO> result = priceRepositoryImpl.getPreferredPrice(applicationDate, productId, brandId);
+        Optional<Price> result = priceRepositoryImpl.getPreferredPrice(applicationDate, productId, brandId);
 
         assertTrue(result.isPresent());
         assertEquals(mockDto, result.get());
@@ -52,10 +57,10 @@ class PriceRepositoryImplTest {
         Integer productId = 1;
         Integer brandId = 1;
 
-        when(priceJPARepository.findTopByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
-                productId, brandId, applicationDate, applicationDate)).thenReturn(Optional.empty());
+        when(priceJPARepository.findTopPrice(
+                productId, brandId, applicationDate)).thenReturn(Optional.empty());
 
-        Optional<PriceResponseDTO> result = priceRepositoryImpl.getPreferredPrice(applicationDate, productId, brandId);
+        Optional<Price> result = priceRepositoryImpl.getPreferredPrice(applicationDate, productId, brandId);
 
         assertFalse(result.isPresent());
     }

@@ -28,34 +28,44 @@ El proyecto sigue una arquitectura **hexagonal (ports & adapters)**, organizada 
 ```
 com.inditex
 │── application
-│   ├── port
-│   │   └── IGetPriceUseCase.java    # Interfaz del caso de uso
-│   ├── service
-│   │   └── GetPriceUseCaseImpl.java # Implementación del caso de uso
+│   ├── caseuse
+│   │   └── IGetPriceUseCase.java         # Interfaz del caso de uso 
+│   │   └── GetPriceUseCaseImpl.java      # Implementación del caso de uso 
+│   ├── mapper
+│   │   └── PriceDtoMapper.java           # Mapper para la conversión entre el modelo de dominio y los DTOs
 │
 │── domain
 │   ├── exception
-│   │   └── NotFoundException.java  # Excepción personalizada
+│   │   └── NotFoundException.java       # Excepción personalizada lanzada cuando no se encuentra un recurso
 │   ├── repository
-│   │   └── PriceRepository.java    # Repositorio en dominio
+│   │   └── PriceRepository.java         # Interfaz que define el puerto de salida para el repositorio de precios
+│   ├── model
+│   │   └── Brand.java                   # Modelo de dominio que representa la entidad Marca
+│   │   └── Currency.java                # Enum de dominio que representa las divisas
+│   │   └── Price.java                   # Modelo de dominio que representa un precio
 │
 │── infrastructure
+│   ├── adapter
+│   │   └── PriceRepositoryAdapter.java  # Implementación del adaptador para la interfaz de repositorio de precios
 │   ├── controller
-│   │   └── PriceController.java    # Controlador REST
+│   │   └── PriceController.java         # Controlador REST que expone los endpoints para interactuar con los precios
 │   ├── exception
-│   │   └── GlobalExceptionHandler.java # Manejo de excepciones
+│   │   └── GlobalExceptionHandler.java  # Manejador global de excepciones para capturar errores de la API
 │   ├── mapper
-│   │   └── PriceMapper.java        # Mapper de entidades
+│   │   └── PriceEntityMapper.java       # Mapper que convierte entre las entidades JPA y los modelos de dominio
+│   ├── interceptor
+│   │   └── RequestResponseLoggingInterceptor.java  # Interceptor que captura y print log las peticiones y respuestas
+│   │   └── WebConfig.java              # Configuración del interceptor para ser registrado en el contexto de Spring
 │   ├── repository
 │   │   ├── entity
-│   │   │   ├── BrandEntity.java    # Entidad de marca
-│   │   │   ├── Currency.java       # Enum de moneda
-│   │   │   ├── PriceEntity.java    # Entidad de precio
+│   │   │   └── BrandEntity.java        # Entidad JPA que mapea la tabla de Marca
+│   │   │   └── Currency.java           # Enum JPA que mapea el tipo de moneda
+│   │   │   └── PriceEntity.java        # Entidad JPA que mapea la tabla de Precios
 │   │   ├── jpa
-│   │   │   ├── PriceJpaRepository.java  # Repositorio JPA
-│   │   │   ├── PriceRepositoryImpl.java # Implementación del repositorio
+│   │   │   └── PriceJpaRepository.java # Implementación del repositorio JPA que interactúa con la base de datos
 │
-│── InditexApp.java # Main Application
+│── InditexApp.java                      # Clase principal que inicia la aplicación Spring Boot
+
 ```
 
 ## 🔄 Flujo de Procesamiento de Consulta de Precios

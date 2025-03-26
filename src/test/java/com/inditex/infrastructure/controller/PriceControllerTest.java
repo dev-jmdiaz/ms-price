@@ -1,7 +1,7 @@
 package com.inditex.infrastructure.controller;
 
-import com.inditex.application.port.IGetPriceUseCase;
-import com.inditex.domain.model.PriceResponseDTO;
+import com.inditex.application.caseuse.IGetPriceUseCase;
+import com.inditex.application.dto.PriceResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,6 +1,7 @@
-package com.inditex.application.port;
+package com.inditex.application.caseuse;
 
-import com.inditex.domain.model.PriceResponseDTO;
+
+import com.inditex.application.dto.PriceResponseDTO;
 
 import java.time.LocalDateTime;
 

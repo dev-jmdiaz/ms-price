@@ -1,17 +1,20 @@
 package com.inditex.infrastructure.exception;
 
+import com.inditex.application.dto.ErrorResponseDTO;
 import com.inditex.domain.exception.NotFoundException;
-import com.inditex.domain.model.ErrorResponseDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 
-@ControllerAdvice
+@Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
@@ -19,13 +22,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex, WebRequest request) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    @ExceptionHandler({IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<Object> handleIllegalArgument(Exception ex, WebRequest request) {
+        log.error("exception : {}",ex.getMessage());
+        var badRequest = HttpStatus.BAD_REQUEST;
+        return buildErrorResponse(badRequest, badRequest.getReasonPhrase());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex, WebRequest request) {
+        log.error("exception : {}",ex.getMessage());
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
     }
 
@@ -36,6 +42,8 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {
+
+        log.error("exception : {}", message);
         var body = new ErrorResponseDTO();
         body.setTimestamp(LocalDateTime.now());
         body.setStatus(status.value());

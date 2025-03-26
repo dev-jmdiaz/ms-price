@@ -68,6 +68,19 @@ class InditexApplicationTests {
     }
 
     @Test
+    @DisplayName("Should return 400 Bad Request when applicationDate is in an incorrect format")
+    void shouldReturnBadRequestWhenApplicationDateFormatIsIncorrect() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/prices")
+                        .param("applicationDate", "2025-06-14:00:00.000")
+                        .param("productId", String.valueOf(PRODUCT_ID))
+                        .param("brandId", String.valueOf(BRAND_ID))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+
+    @Test
     @DisplayName("Should return 404 Not Found when no price is available for the given date and product")
     void shouldReturnNotFoundWhenNoPriceIsAvailable() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/prices")
